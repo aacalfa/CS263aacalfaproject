@@ -105,6 +105,8 @@
                             <targetPath>WEB-INF</targetPath>
                         </resource>
                     </webResources>
+                    <!-- http port -->
+                    <port>8881</port>
                 </configuration>
             </plugin>
 
@@ -114,6 +116,8 @@
                 <version>1.9.10</version>
                 <configuration>
                     <enableJarClasses>false</enableJarClasses>
+                    <!-- http port -->
+                    <port>8881</port>
                     <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
                     <!-- address>0.0.0.0</address>
                     <port>8080</port -->
