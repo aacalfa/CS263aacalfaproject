@@ -10,38 +10,59 @@
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Map"  %>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory" %>
+<%@ page import="com.google.appengine.api.blobstore.BlobKey" %>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreService" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 
 <html>
 <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
+		<title>Strategy Board</title>
 </head>
 
 <body>
 
 <%
-    String guestbookName = request.getParameter("guestbookName");
-    if (guestbookName == null) {
-        guestbookName = "default";
-    }
-    pageContext.setAttribute("guestbookName", guestbookName);
-    UserService userService = UserServiceFactory.getUserService();
-    User user = userService.getCurrentUser();
-    if (user != null) {
-        pageContext.setAttribute("user", user);
+		String guestbookName = request.getParameter("guestbookName");
+		if (guestbookName == null) {
+		    guestbookName = "default";
+		}
+		pageContext.setAttribute("guestbookName", guestbookName);
+		UserService userService = UserServiceFactory.getUserService();
+		User user = userService.getCurrentUser();
+		if (user != null) {
+			pageContext.setAttribute("user", user);
 %>
 <p>Hello, ${fn:escapeXml(user.nickname)}! (You can
     <a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
+
 <%
-} else {
+			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+//
+//			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
+//			if(blobs.isEmpty()) {
+
 %>
-<p>Hello!
+        <form action="<%= blobstoreService.createUploadUrl("/upload") %>" method="post" enctype="multipart/form-data">
+            <input type="text" name="foo">
+            <input type="file" name="myFile">
+            <input type="submit" value="Submit/View uploaded maps">
+        </form>
+<%
+//			}
+		} else {
+%>
+<p>Hello! Welcome to the Strategy Board app created by <a href="https://github.com/aacalfa"> Andre Abreu Calfa.</a>
     <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
-    to include your name with greetings you post.</p>
+    to start building up your strategy for your favorite game!</p>
 <%
     }
 %>
-
+<%--
 <%
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Key guestbookKey = KeyFactory.createKey("Guestbook", guestbookName);
@@ -55,7 +76,7 @@
 <%
 } else {
 %>
-<p>Messages in Guestbook '${fn:escapeXml(guestbookName)}'.</p>
+<%-- <p>Messages in Guestbook '${fn:escapeXml(guestbookName)}'.</p>
 <%
     for (Entity greeting : greetings) {
         pageContext.setAttribute("greeting_content",
@@ -88,6 +109,13 @@
     <div><input type="text" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/></div>
     <div><input type="submit" value="Switch Guestbook"/></div>
 </form>
+
+
+<div class="portrait">
+<img src="http://img4.wikia.nocookie.net/__cb20131129021027/battlefield/images/f/fa/Battlefield_4_Golmud_Railway_Overview.jpg"width="50%" alt=""/>
+</div>
+
+--%>
 
 </body>
 </html>
