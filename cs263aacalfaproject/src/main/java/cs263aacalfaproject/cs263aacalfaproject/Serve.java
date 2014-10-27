@@ -29,7 +29,10 @@ public class Serve extends HttpServlet {
 		}
 		else {
 			BlobKey blobKey = new BlobKey(req.getParameter("blob-key"));
+			res.setContentType("text/plain");
+			res.getWriter().println("test");
 			blobstoreService.serve(blobKey, res);
 		}
 	}
 }
+

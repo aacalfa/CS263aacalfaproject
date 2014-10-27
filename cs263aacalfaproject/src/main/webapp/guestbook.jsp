@@ -42,9 +42,6 @@
 
 <%
 			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-//
-//			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
-//			if(blobs.isEmpty()) {
 
 %>
         <form action="<%= blobstoreService.createUploadUrl("/upload") %>" method="post" enctype="multipart/form-data">
@@ -110,10 +107,6 @@
     <div><input type="submit" value="Switch Guestbook"/></div>
 </form>
 
-
-<div class="portrait">
-<img src="http://img4.wikia.nocookie.net/__cb20131129021027/battlefield/images/f/fa/Battlefield_4_Golmud_Railway_Overview.jpg"width="50%" alt=""/>
-</div>
 
 --%>
 

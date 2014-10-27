@@ -9,11 +9,8 @@
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map"  %>
-<%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory" %>
-<%@ page import="com.google.appengine.api.blobstore.BlobKey" %>
-<%@ page import="com.google.appengine.api.blobstore.BlobstoreService" %>
+<%@ page import="java.util.*" %>
+<%@ page import="com.google.appengine.api.blobstore.*" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
@@ -27,24 +24,25 @@
 <body>
 
 <%
-		String guestbookName = request.getParameter("guestbookName");
-		if (guestbookName == null) {
-		    guestbookName = "default";
-		}
-		pageContext.setAttribute("guestbookName", guestbookName);
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
-		if (user != null) {
-			pageContext.setAttribute("user", user);
+		if (user == null)
+			response.sendRedirect("/");
 %>
-<p>Test</p>
+<p>These are the current available maps. Please select one and prepare for the battle!</p>
 
 <%
 			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-//
-//			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
-//			if(blobs.isEmpty()) {
-
+			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
+			Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
+			while(iterator.hasNext()) {
+			String mapname = iterator.next().getFilename();
+			mapname = mapname.replace("_BF4.jpg", "");
+			mapname = mapname.replace("_", " ");
+			%>
+			<%= mapname %> <br /> 
+			<%
+			}
 %>
 
 </body>
