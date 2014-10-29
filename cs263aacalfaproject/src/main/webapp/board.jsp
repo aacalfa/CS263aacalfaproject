@@ -36,11 +36,13 @@
 			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
 			Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
 			while(iterator.hasNext()) {
-			String mapname = iterator.next().getFilename();
+			BlobInfo blobinfo = iterator.next();
+			String mapname = blobinfo.getFilename();
+			String blobkeyStr = blobinfo.getBlobKey().getKeyString();
 			mapname = mapname.replace("_BF4.jpg", "");
 			mapname = mapname.replace("_", " ");
 			%>
-			<%= mapname %> <br /> 
+			<a href="/serve?blob-key=<%= blobkeyStr%>"><%= mapname %> <br /></a>
 			<%
 			}
 %>
