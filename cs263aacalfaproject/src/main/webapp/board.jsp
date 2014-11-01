@@ -11,6 +11,7 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.appengine.api.blobstore.*" %>
+<%@ page import="com.google.appengine.api.images.*" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
@@ -36,14 +37,17 @@
 			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
 			Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
 			while(iterator.hasNext()) {
-			BlobInfo blobinfo = iterator.next();
-			String mapname = blobinfo.getFilename();
-			String blobkeyStr = blobinfo.getBlobKey().getKeyString();
-			mapname = mapname.replace("_BF4.jpg", "");
-			mapname = mapname.replace("_", " ");
-			%>
-			<a href="/serve?blob-key=<%= blobkeyStr%>"><%= mapname %> <br /></a>
-			<%
+				BlobInfo blobinfo = iterator.next();
+				String mapname = blobinfo.getFilename();
+				if (!mapname.contains("_BF4")) // Not actually a map
+					continue;
+
+				String blobkeyStr = blobinfo.getBlobKey().getKeyString();
+				mapname = mapname.replace("_BF4.png", "");
+				mapname = mapname.replace("_", " ");
+				%>
+				<a href="/serve?blob-key=<%= blobkeyStr%>"><%= mapname %> <br /></a>
+				<%
 			}
 %>
 

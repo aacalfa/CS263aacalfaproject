@@ -13,9 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.images.*;
 
 public class Upload extends HttpServlet {
-	private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+	private BlobstoreService blobstoreService = BlobstoreServiceFactory
+			.getBlobstoreService();
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -27,33 +29,42 @@ public class Upload extends HttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
-		// User clicked on Submit/View uploaded maps, check if there are maps already uploaded
+		// User clicked on Submit/View uploaded maps, check if there are maps
+		// already uploaded
 		if (blobKey == null) {
 			Query gaeQuery = new Query("GameMap");
 			PreparedQuery pq = datastore.prepare(gaeQuery);
 			List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
-			BlobKey testKey = null;
 			if (!list.isEmpty()) {
-				for (Entity obj : list) {
-					testKey = new BlobKey(obj.getProperty("blob-key").toString());
-				}
-
+				// Show the main board menu. User will select one of available
+				// maps
 				res.sendRedirect("/board.jsp");
-				//res.sendRedirect("/serve?blob-key=" + testKey.getKeyString());
+			} else {
+				res.sendRedirect("/serve?blob-key=" + ""); // Error message will
+															// be shown
 			}
-			else {
-				res.sendRedirect("/serve?blob-key=" + ""); // Error message will be shown
-			}
-		} else {
-			Entity imagedata = new Entity("GameMap", blobKey.getKeyString());
-			imagedata.setProperty("blob-key", blobKey.getKeyString());
+		} else { // User chose to upload a new map
 			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
 			BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
 			String blobFilename = blobInfo.getFilename();
-			imagedata.setProperty("mapname", blobFilename);
-			// Add to data store
-			datastore.put(imagedata);
-			res.sendRedirect("/serve?blob-key=" + blobKey.getKeyString());
+			if (blobFilename.contains("_BF4")) { // Loading a map
+				Entity imagedata = new Entity("GameMap", blobKey.getKeyString());
+				imagedata.setProperty("blob-key", blobKey.getKeyString());
+
+				imagedata.setProperty("mapname", blobFilename);
+				// Add to data store
+				datastore.put(imagedata);
+			}
+			else if(blobFilename.contains("_ATTR")){ // Loading a map attribute
+				Entity imagedata = new Entity("MapAtributes", blobKey.getKeyString());
+				imagedata.setProperty("blob-key", blobKey.getKeyString());
+
+				imagedata.setProperty("attrname", blobFilename);
+				// Add to data store
+				datastore.put(imagedata);
+
+			}
+			res.sendRedirect("/board.jsp");
 		}
 	}
 }
