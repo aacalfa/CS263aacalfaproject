@@ -13,6 +13,28 @@ import com.google.appengine.api.datastore.*;
 
 public class Serve extends HttpServlet {
 	
+	public byte[] readImageData(BlobKey blobKey, long blobSize) {
+	    BlobstoreService blobStoreService = BlobstoreServiceFactory
+	            .getBlobstoreService();
+	    byte[] allTheBytes = new byte[(int)blobSize];
+	    long amountLeftToRead = blobSize;
+	    long startIndex = 0;
+	    while (amountLeftToRead > 0) {
+	        long amountToReadNow = Math.min(
+	                BlobstoreService.MAX_BLOB_FETCH_SIZE - 1, amountLeftToRead);
+
+	        byte[] chunkOfBytes = blobStoreService.fetchData(blobKey,
+	                startIndex, startIndex + amountToReadNow - 1);
+
+	        System.arraycopy(chunkOfBytes, 0, allTheBytes, (int)startIndex, chunkOfBytes.length);
+	        
+	        amountLeftToRead -= amountToReadNow;
+	        startIndex += amountToReadNow;
+	    }
+
+	    return allTheBytes;
+	}
+	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException {
@@ -33,7 +55,10 @@ public class Serve extends HttpServlet {
 			BlobInfo blobinfo = blobInfoFactory.loadBlobInfo(blobKey);
 
 			ImagesService imagesService = ImagesServiceFactory.getImagesService();
-			byte[] bytes = blobstoreService.fetchData(blobKey	, 0, blobinfo.getSize());
+			long blobSize = blobinfo.getSize();
+			// Google Image API limits fetches from image bytes to 1MB. Must read them in chunks
+			byte[] bytes = readImageData(blobKey, blobSize);
+			
 			Image image = ImagesServiceFactory.makeImage(bytes);
 			
 			List<Composite> listComposites=new ArrayList<Composite>();
@@ -64,7 +89,6 @@ public class Serve extends HttpServlet {
 			
 			// serve the image
 			res.setContentType("image/png");
-			//res.getOutputStream().write(image.getImageData());
 			res.getOutputStream().write(newImage.getImageData());
 		}
 	}
