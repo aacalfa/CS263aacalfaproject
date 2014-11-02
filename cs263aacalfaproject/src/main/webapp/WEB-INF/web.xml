@@ -19,6 +19,11 @@
     <servlet-class>cs263aacalfaproject.cs263aacalfaproject.Serve</servlet-class>
   </servlet>
   
+        <servlet>
+    <servlet-name>BoardServlet</servlet-name>
+    <servlet-class>cs263aacalfaproject.cs263aacalfaproject.BoardServlet</servlet-class>
+  </servlet>
+  
     <servlet-mapping>
         <servlet-name>sign</servlet-name>
         <url-pattern>/sign</url-pattern>
@@ -32,6 +37,11 @@
     <servlet-mapping>
     <servlet-name>Serve</servlet-name>
     <url-pattern>/serve</url-pattern>
+  </servlet-mapping>
+  
+    <servlet-mapping>
+    <servlet-name>BoardServlet</servlet-name>
+    <url-pattern>/boardshow</url-pattern>
   </servlet-mapping>
     
     

@@ -38,7 +38,7 @@ public class Upload extends HttpServlet {
 			if (!list.isEmpty()) {
 				// Show the main board menu. User will select one of available
 				// maps
-				res.sendRedirect("/board.jsp");
+				res.sendRedirect("/menu.jsp");
 			} else {
 				res.sendRedirect("/serve?blob-key=" + ""); // Error message will
 															// be shown
@@ -64,7 +64,7 @@ public class Upload extends HttpServlet {
 				datastore.put(imagedata);
 
 			}
-			res.sendRedirect("/board.jsp");
+			res.sendRedirect("/menu.jsp");
 		}
 	}
 }

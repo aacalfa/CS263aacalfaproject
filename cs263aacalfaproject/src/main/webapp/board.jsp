@@ -19,37 +19,64 @@
 <html>
 <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
-		<title>Strategy Board</title>
+		<title>Strategy Board Menu</title>
 </head>
 
 <body>
+
+<%!
+private byte[] readImageData(BlobKey blobKey, long blobSize) {
+	    BlobstoreService blobStoreService = BlobstoreServiceFactory.getBlobstoreService();
+	    byte[] allTheBytes = new byte[(int)blobSize];
+	    long amountLeftToRead = blobSize;
+	    long startIndex = 0;
+	    while (amountLeftToRead > 0) {
+	        long amountToReadNow = Math.min(BlobstoreService.MAX_BLOB_FETCH_SIZE - 1, amountLeftToRead);
+
+	        byte[] chunkOfBytes = blobStoreService.fetchData(blobKey, startIndex, startIndex + amountToReadNow - 1);
+
+	        System.arraycopy(chunkOfBytes, 0, allTheBytes, (int)startIndex, chunkOfBytes.length);
+	        
+	        amountLeftToRead -= amountToReadNow;
+	        startIndex += amountToReadNow;
+	    }
+
+	    return allTheBytes;
+	}
+%>
 
 <%
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		if (user == null)
 			response.sendRedirect("/");
-%>
-<p>These are the current available maps. Please select one and prepare for the battle!</p>
 
-<%
-			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
-			Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
-			while(iterator.hasNext()) {
-				BlobInfo blobinfo = iterator.next();
-				String mapname = blobinfo.getFilename();
-				if (!mapname.contains("_BF4")) // Not actually a map
-					continue;
+		String blobKeystr = request.getParameter( "blob-key" );
+		if ( blobKeystr == null )
+			response.sendRedirect("/");
 
-				String blobkeyStr = blobinfo.getBlobKey().getKeyString();
-				mapname = mapname.replace("_BF4.png", "");
-				mapname = mapname.replace("_", " ");
-				%>
-				<a href="/serve?blob-key=<%= blobkeyStr%>"><%= mapname %> <br /></a>
-				<%
-			}
+		BlobKey blobKey = new BlobKey(request.getParameter("blob-key"));
+		String blobkeyStr = blobKey.getKeyString();
+		// Find corresponding map image blobinfo instance
+		
+		BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
+		BlobInfo blobinfo = blobInfoFactory.loadBlobInfo(blobKey);
+
+		long blobSize = blobinfo.getSize();
+		// Google Image API limits fetches from image bytes to 1MB. Must read them in chunks
+		byte[] bytes = readImageData(blobKey, blobSize);
+		
+		Image image = ImagesServiceFactory.makeImage(bytes);
+
+		// serve the image
+		//res.setContentType("image/png");
+		//res.getOutputStream().write(image.getImageData());
 %>
+
+<img src="boardshow?blob-key=<%= blobkeyStr%>" />
+
+<p>This is a test.</p>
 
 </body>
 </html>
+
