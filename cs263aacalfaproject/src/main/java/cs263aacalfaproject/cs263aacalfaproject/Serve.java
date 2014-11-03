@@ -48,23 +48,9 @@ public class Serve extends HttpServlet {
 		    out.println("</script>");
 		    out.println("</body></html>");
 		}
-		else {
+		else { // Valid map selected, show strategy board.
 			BlobKey blobKey = new BlobKey(req.getParameter("blob-key"));
-			// Find corresponding map image blobinfo instance
-			
-//			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
-//			BlobInfo blobinfo = blobInfoFactory.loadBlobInfo(blobKey);
-//
-//			long blobSize = blobinfo.getSize();
-//			// Google Image API limits fetches from image bytes to 1MB. Must read them in chunks
-//			byte[] bytes = readImageData(blobKey, blobSize);
-//			
-//			Image image = ImagesServiceFactory.makeImage(bytes);
-//
-//			// serve the image
-//			res.setContentType("image/png");
-//			res.getOutputStream().write(image.getImageData());
-//			
+			// Show board with map
 			req.setAttribute("blob-key", blobKey.getKeyString());
 			req.getRequestDispatcher("board.jsp").forward(req, res);
 		}

@@ -67,16 +67,27 @@ private byte[] readImageData(BlobKey blobKey, long blobSize) {
 		byte[] bytes = readImageData(blobKey, blobSize);
 		
 		Image image = ImagesServiceFactory.makeImage(bytes);
-
-		// serve the image
-		//res.setContentType("image/png");
-		//res.getOutputStream().write(image.getImageData());
 %>
 
 <img src="boardshow?blob-key=<%= blobkeyStr%>" />
 
-<p>This is a test.</p>
 
+<H1>Select one of the available markers and add it to the map.</H1>
+        <FORM ACTION="boardshow" METHOD="post">
+             <INPUT TYPE="radio" NAME="radios" VALUE="Attack" id="att" CHECKED>
+             Attack
+						 <label for="att"><img src="sword.png" /></label>
+            <tab>
+            <INPUT TYPE="radio" NAME="radios" VALUE="Defend" id="def">
+             Defend
+						 <label for="def"><img src="shield.png" /></label>
+            <tab>
+            <INPUT TYPE="radio" NAME="radios" VALUE="Evac Order" id="evac">
+             Evac Order
+						 <label for="evac"><img src="evac.png" /></label>
+            <tab>
+            <INPUT TYPE="submit" VALUE="Submit">
+        </FORM>
 </body>
 </html>
 
