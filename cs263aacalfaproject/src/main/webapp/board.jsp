@@ -51,12 +51,14 @@ private byte[] readImageData(BlobKey blobKey, long blobSize) {
 		if (user == null)
 			response.sendRedirect("/");
 
+		// Check if we have a valid blob-key for the map image
 		String blobKeystr = request.getParameter( "blob-key" );
 		if ( blobKeystr == null )
 			response.sendRedirect("/");
 
-		BlobKey blobKey = new BlobKey(request.getParameter("blob-key"));
-		String blobkeyStr = blobKey.getKeyString();
+		String radioValue = (String)request.getAttribute("attrname");
+
+		BlobKey blobKey = new BlobKey(blobKeystr);
 		// Find corresponding map image blobinfo instance
 		
 		BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
@@ -69,20 +71,20 @@ private byte[] readImageData(BlobKey blobKey, long blobSize) {
 		Image image = ImagesServiceFactory.makeImage(bytes);
 %>
 
-<img src="boardshow?blob-key=<%= blobkeyStr%>" />
+<img src="boardshow?blob-key=<%= blobKeystr%>&attrname=<%= radioValue%>" />
 
 
 <H1>Select one of the available markers and add it to the map.</H1>
-        <FORM ACTION="boardshow" METHOD="post">
-             <INPUT TYPE="radio" NAME="radios" VALUE="Attack" id="att" CHECKED>
+        <FORM ACTION="boardshow?blob-key=<%= blobKeystr%>" METHOD="post">
+             <INPUT TYPE="radio" NAME="radios" VALUE="sword" id="att" CHECKED>
              Attack
 						 <label for="att"><img src="sword.png" /></label>
             <tab>
-            <INPUT TYPE="radio" NAME="radios" VALUE="Defend" id="def">
+            <INPUT TYPE="radio" NAME="radios" VALUE="shield" id="def">
              Defend
 						 <label for="def"><img src="shield.png" /></label>
             <tab>
-            <INPUT TYPE="radio" NAME="radios" VALUE="Evac Order" id="evac">
+            <INPUT TYPE="radio" NAME="radios" VALUE="evac" id="evac">
              Evac Order
 						 <label for="evac"><img src="evac.png" /></label>
             <tab>
