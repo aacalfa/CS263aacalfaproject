@@ -19,31 +19,11 @@
 <html>
 <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
-		<title>Strategy Board Menu</title>
+    <title>Strategy Board</title>
 </head>
 
 <body>
 
-<%!
-private byte[] readImageData(BlobKey blobKey, long blobSize) {
-	    BlobstoreService blobStoreService = BlobstoreServiceFactory.getBlobstoreService();
-	    byte[] allTheBytes = new byte[(int)blobSize];
-	    long amountLeftToRead = blobSize;
-	    long startIndex = 0;
-	    while (amountLeftToRead > 0) {
-	        long amountToReadNow = Math.min(BlobstoreService.MAX_BLOB_FETCH_SIZE - 1, amountLeftToRead);
-
-	        byte[] chunkOfBytes = blobStoreService.fetchData(blobKey, startIndex, startIndex + amountToReadNow - 1);
-
-	        System.arraycopy(chunkOfBytes, 0, allTheBytes, (int)startIndex, chunkOfBytes.length);
-	        
-	        amountLeftToRead -= amountToReadNow;
-	        startIndex += amountToReadNow;
-	    }
-
-	    return allTheBytes;
-	}
-%>
 
 <%
 		UserService userService = UserServiceFactory.getUserService();
@@ -57,22 +37,80 @@ private byte[] readImageData(BlobKey blobKey, long blobSize) {
 			response.sendRedirect("/");
 
 		String radioValue = (String)request.getAttribute("attrname");
-
-		BlobKey blobKey = new BlobKey(blobKeystr);
-		// Find corresponding map image blobinfo instance
-		
-		BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
-		BlobInfo blobinfo = blobInfoFactory.loadBlobInfo(blobKey);
-
-		long blobSize = blobinfo.getSize();
-		// Google Image API limits fetches from image bytes to 1MB. Must read them in chunks
-		byte[] bytes = readImageData(blobKey, blobSize);
-		
-		Image image = ImagesServiceFactory.makeImage(bytes);
 %>
 
-<img src="boardshow?blob-key=<%= blobKeystr%>&attrname=<%= radioValue%>" />
+<script language="JavaScript1.2">
+<!--
 
+// Detect if the browser is IE or not.
+// If it is not IE, we assume that the browser is NS.
+var IE = document.all?true:false
+
+// If NS -- that is, !IE -- then set up for mouse capture
+if (!IE) document.captureEvents(Event.MOUSEMOVE)
+
+// Set-up to use getMouseXY function onMouseMove
+//document.onmousemove = getMouseXY;
+document.ondblclick = getMouseXY;
+
+// Temporary variables to hold mouse x-y pos.s
+var tempX = 0
+var tempY = 0
+
+// Main function to retrieve mouse x-y pos.s
+
+function getMouseXY(e) {
+  if (IE) { // grab the x-y pos.s if browser is IE
+    tempX = event.clientX + document.body.scrollLeft
+    tempY = event.clientY + document.body.scrollTop
+  } else {  // grab the x-y pos.s if browser is NS
+    tempX = e.pageX
+    tempY = e.pageY
+  }  
+  // catch possible negative values in NS4
+  if (tempX < 0){tempX = 0}
+  if (tempY < 0){tempY = 0}  
+	// TODO: ABORT FUNCTION IF X AND Y EXCEEDS IMAGE COORDINATES
+
+  // show the position values in the form named Show
+  // in the text fields named MouseX and MouseY
+	// Image starts with an offset of 10 pixels in x and y dimensions.
+  tempX -= 10 
+  tempY -= 10 
+  document.Show.MouseX.value = tempX 
+  document.Show.MouseY.value = tempY 
+
+	console.log(tempX)
+	console.log(tempY)
+
+	var blobkey ="<%=blobKeystr%>";  
+  var attribute = "sword";
+	var radios = document.getElementsByName('radios');
+
+  for (var i = 0, length = radios.length; i < length; i++) {
+    if (radios[i].checked) {
+        // do whatever you want with the checked radio
+        attribute = radios[i].value;
+        // only one radio can be logically checked, don't check the rest
+        break;
+    }
+  }
+  //window.location.replace("boardshow?blob-key="+ blobkey +"&attrname=" + attribute + "&xcoord=" + tempX + "&ycoord=" + tempY);
+  var mapimage = document.getElementById("map");
+	var imgsrc = "boardshow?blob-key="+ blobkey +"&attrname=" + attribute + "&xcoord=" + tempX + "&ycoord=" + tempY;
+	mapimage.src = imgsrc;
+
+  return true
+}
+
+//-->
+</script>
+<img src="boardshow?blob-key=<%= blobKeystr%>&attrname=<%= radioValue%>" id="map" />
+
+<form name="Show">
+<input type="text" name="MouseX" value="0" size="4"> X<br>
+<input type="text" name="MouseY" value="0" size="4"> Y<br>
+</form>
 
 <H1>Select one of the available markers and add it to the map.</H1>
         <FORM ACTION="boardshow?blob-key=<%= blobKeystr%>" METHOD="post">

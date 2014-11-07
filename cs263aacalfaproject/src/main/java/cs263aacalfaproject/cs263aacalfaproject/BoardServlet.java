@@ -71,8 +71,6 @@ public class BoardServlet extends HttpServlet {
 			for (Entity obj : list) {
 				String attrname = (String) obj.getProperty("attrname");
 				attrname = attrname.replace("_ATTR.png", "");
-				System.out.println("attrname = " + attrname);
-				System.out.println("radioValue = " + radioValue);
 				if(!attrname.equals(radioValue))
 					continue;
 				
@@ -103,7 +101,6 @@ public class BoardServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		String radioValue = request.getParameter("radios");
 
-		BlobKey blobKey = new BlobKey(request.getParameter("blob-key"));
 		// Show board with map
 		request.setAttribute("attrname", radioValue);
 		request.getRequestDispatcher("board.jsp").forward(request, response);
