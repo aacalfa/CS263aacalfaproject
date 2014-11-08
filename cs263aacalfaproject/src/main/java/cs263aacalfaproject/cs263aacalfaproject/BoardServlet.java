@@ -53,6 +53,7 @@ public class BoardServlet extends HttpServlet {
 		// them in chunks
 		byte[] bytes = Serve.readImageData(blobKey, blobSize);
 
+		// Add map image to composite
 		Image image = ImagesServiceFactory.makeImage(bytes);
 		Composite aPaste = ImagesServiceFactory.makeComposite(image, 0, 0, 1f,
 				Composite.Anchor.TOP_LEFT);
@@ -60,6 +61,10 @@ public class BoardServlet extends HttpServlet {
 
 		String radioValue = req.getParameter("attrname");
 		if (!radioValue.equals("null")) {
+			// Get attribute coordinates
+			int xcoord = Integer.parseInt(req.getParameter("xcoord"));
+			int ycoord = Integer.parseInt(req.getParameter("ycoord"));
+
 			// Get attribute image
 			DatastoreService datastore = DatastoreServiceFactory
 					.getDatastoreService();
@@ -71,22 +76,32 @@ public class BoardServlet extends HttpServlet {
 			for (Entity obj : list) {
 				String attrname = (String) obj.getProperty("attrname");
 				attrname = attrname.replace("_ATTR.png", "");
-				if(!attrname.equals(radioValue))
+				if (!attrname.equals(radioValue))
 					continue;
-				
+
 				String blobkeyStr = (String) obj.getProperty("blob-key");
 				attrblobKey = new BlobKey(blobkeyStr);
 				attrinfo = blobInfoFactory.loadBlobInfo(attrblobKey);
 			}
+			// Create attribute image
 			byte[] attrbytes = blobstoreService.fetchData(attrblobKey, 0,
 					attrinfo.getSize());
 			Image attrimage = ImagesServiceFactory.makeImage(attrbytes);
 
-			Composite bPaste = ImagesServiceFactory.makeComposite(attrimage, 0,
-					0, 1.0f, Composite.Anchor.CENTER_CENTER);
-			listComposites.add(bPaste);
+			// Add attribute image to composite
+			// Check if coordinates values are valid
+			if (xcoord <= image.getWidth() && ycoord <= image.getHeight()) {
+				// Adjust xcoord and ycoord to correspond to center of attribute image
+				 xcoord -= attrimage.getWidth()/2;
+				 ycoord -= attrimage.getHeight()/2;
+				Composite bPaste = ImagesServiceFactory.makeComposite(
+						attrimage, xcoord, ycoord, 1.0f,
+						Composite.Anchor.TOP_LEFT);
+				listComposites.add(bPaste);
+			}
 		}
 
+		// Form new image with map and attribute composites
 		Image newImage = imagesService.composite(listComposites,
 				image.getWidth(), image.getHeight(), 0L,
 				ImagesService.OutputEncoding.PNG);

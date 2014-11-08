@@ -70,32 +70,27 @@ function getMouseXY(e) {
   // catch possible negative values in NS4
   if (tempX < 0){tempX = 0}
   if (tempY < 0){tempY = 0}  
-	// TODO: ABORT FUNCTION IF X AND Y EXCEEDS IMAGE COORDINATES
 
   // show the position values in the form named Show
   // in the text fields named MouseX and MouseY
 	// Image starts with an offset of 10 pixels in x and y dimensions.
   tempX -= 10 
   tempY -= 10 
-  document.Show.MouseX.value = tempX 
-  document.Show.MouseY.value = tempY 
 
-	console.log(tempX)
-	console.log(tempY)
-
+	// Get selected radio value
 	var blobkey ="<%=blobKeystr%>";  
   var attribute = "sword";
 	var radios = document.getElementsByName('radios');
 
   for (var i = 0, length = radios.length; i < length; i++) {
     if (radios[i].checked) {
-        // do whatever you want with the checked radio
+        // Found the checked radio
         attribute = radios[i].value;
         // only one radio can be logically checked, don't check the rest
         break;
     }
   }
-  //window.location.replace("boardshow?blob-key="+ blobkey +"&attrname=" + attribute + "&xcoord=" + tempX + "&ycoord=" + tempY);
+	// Update image with new attribute
   var mapimage = document.getElementById("map");
 	var imgsrc = "boardshow?blob-key="+ blobkey +"&attrname=" + attribute + "&xcoord=" + tempX + "&ycoord=" + tempY;
 	mapimage.src = imgsrc;
@@ -107,12 +102,7 @@ function getMouseXY(e) {
 </script>
 <img src="boardshow?blob-key=<%= blobKeystr%>&attrname=<%= radioValue%>" id="map" />
 
-<form name="Show">
-<input type="text" name="MouseX" value="0" size="4"> X<br>
-<input type="text" name="MouseY" value="0" size="4"> Y<br>
-</form>
-
-<H1>Select one of the available markers and add it to the map.</H1>
+<H2>Select one of the available markers and double click on the map to add it.</H2>
         <FORM ACTION="boardshow?blob-key=<%= blobKeystr%>" METHOD="post">
              <INPUT TYPE="radio" NAME="radios" VALUE="sword" id="att" CHECKED>
              Attack
@@ -125,8 +115,6 @@ function getMouseXY(e) {
             <INPUT TYPE="radio" NAME="radios" VALUE="evac" id="evac">
              Evac Order
 						 <label for="evac"><img src="evac.png" /></label>
-            <tab>
-            <INPUT TYPE="submit" VALUE="Submit">
         </FORM>
 </body>
 </html>
