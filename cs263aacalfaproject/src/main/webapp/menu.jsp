@@ -87,7 +87,6 @@ $("#simplepost").click(function(e)
 {
 var MyForm = $("#ajaxform");
 var MyFormCrt = JSON.stringify(MyForm.serializeObject());
-console.log(MyFormCrt);
  $.ajax(
  {
  url : "context/jerseyws/addmsg",
@@ -108,7 +107,37 @@ alert(maindta);
  e.preventDefault(); //STOP default action
 
 });
-});</script>
+});
+
+$.getJSON("/mapsstats", function(list) {
+    var table = $('#tabletest');
+    $.each(list, function(index, data) {
+        $('<tr>').appendTo(table)
+            .append($('<td>').text(data.filename))
+            .append($('<td>').text(data.size))
+            .append($('<td>').text(data.width))
+            .append($('<td>').text(data.height))
+            .append($('<td>').text(data.format));
+    });
+});
+
+</script>
+
+<br>
+<br>
+
+<p>Available maps statistics:</p>
+<table style="width:100%" id="tabletest">
+  <tr>
+    <td>Map file name</td>
+    <td>Map file size</td> 
+    <td>Map width</td>
+    <td>Map height</td>
+    <td>Image format</td>
+  </tr>
+</table>				
+
+<br>
 
 <p>Suggestions? Bugs? Please contact the developer!</p>
 <form method="post" name="ajaxform" id ="ajaxform">
@@ -120,7 +149,6 @@ alert(maindta);
 		</p>
 <input type="button" class="btn btn-info" id="simplepost" value="Send message"></form>
 	</form>
-
 
 </body>
 </html>

@@ -1,6 +1,5 @@
 package cs263aacalfaproject.cs263aacalfaproject;
 
-import java.io.*;
 import java.util.*;
 
 import javax.mail.Message;
@@ -12,10 +11,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.*;
 import javax.servlet.http.*;
-
-import java.security.*;
-
-import com.google.appengine.api.users.*;
 
 import java.io.IOException;
 
@@ -36,7 +31,6 @@ public class Worker extends HttpServlet {
 		try {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress("aacalfa@gmail.com", name));
-			//msg.setFrom(new InternetAddress(emailAddress, name));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
 					"aacalfa@gmail.com", "Andre"));
 			msg.setSubject("Strategy Board: New feedback arrived!");

@@ -21,9 +21,9 @@ public class ContactMessage {
 		return emailtext;
 	}
 	
-	public String setName(String newmsg) {
-		emailtext = newmsg;
-		return emailtext;
+	public String setName(String name) {
+		username = name;
+		return username;
 	}
 	
 	public String setMessage(String newmsg) {

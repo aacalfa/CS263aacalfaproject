@@ -9,24 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.blobstore.BlobInfo;
-import com.google.appengine.api.blobstore.BlobInfoFactory;
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.blobstore.*;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.images.Composite;
-import com.google.appengine.api.images.Image;
-import com.google.appengine.api.images.ImagesService;
-import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.images.*;
+import com.google.appengine.api.users.*;
 
 public class BoardServlet extends HttpServlet {
 	@Override
@@ -91,9 +78,10 @@ public class BoardServlet extends HttpServlet {
 			// Add attribute image to composite
 			// Check if coordinates values are valid
 			if (xcoord <= image.getWidth() && ycoord <= image.getHeight()) {
-				// Adjust xcoord and ycoord to correspond to center of attribute image
-				 xcoord -= attrimage.getWidth()/2;
-				 ycoord -= attrimage.getHeight()/2;
+				// Adjust xcoord and ycoord to correspond to center of attribute
+				// image
+				xcoord -= attrimage.getWidth() / 2;
+				ycoord -= attrimage.getHeight() / 2;
 				Composite bPaste = ImagesServiceFactory.makeComposite(
 						attrimage, xcoord, ycoord, 1.0f,
 						Composite.Anchor.TOP_LEFT);

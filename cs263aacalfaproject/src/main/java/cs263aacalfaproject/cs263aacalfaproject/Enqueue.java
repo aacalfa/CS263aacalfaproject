@@ -25,10 +25,6 @@ public class Enqueue {
 		
 		UserService userService = UserServiceFactory.getUserService();
 		User currentUser = userService.getCurrentUser();
-
-		//if (currentUser == null) {
-			//response.sendRedirect(userService.createLoginURL(request.getRequestURI()));
-		//}
 		
 		// Read the email form which was sent from JSON
 		JsonReader jsonreader = new JsonReader(new StringReader(jsonstring));
