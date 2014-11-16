@@ -29,6 +29,7 @@
 		User user = userService.getCurrentUser();
 		if (user == null)
 			response.sendRedirect("/");
+
 %>
 <p>These are the current available maps. Please select one and prepare for the battle!</p>
 
@@ -130,7 +131,7 @@ $.getJSON("/mapsstats", function(list) {
 <table style="width:100%" id="tabletest">
   <tr>
     <td>Map file name</td>
-    <td>Map file size</td> 
+    <td>Map file size (bytes)</td> 
     <td>Map width</td>
     <td>Map height</td>
     <td>Image format</td>

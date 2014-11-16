@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.blobstore.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.images.*;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class Upload extends HttpServlet {
 	private BlobstoreService blobstoreService = BlobstoreServiceFactory
@@ -65,6 +68,7 @@ public class Upload extends HttpServlet {
 
 			}
 			res.sendRedirect("/menu.jsp");
+			
 		}
 	}
 }
