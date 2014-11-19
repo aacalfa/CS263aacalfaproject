@@ -49,17 +49,42 @@ var IE = document.all?true:false
 // If NS -- that is, !IE -- then set up for mouse capture
 if (!IE) document.captureEvents(Event.MOUSEMOVE)
 
-// Set-up to use getMouseXY function onMouseMove
-//document.onmousemove = getMouseXY;
-document.ondblclick = getMouseXY;
+// Set-up to use addMarkerXY function on double click
+document.ondblclick = addMarkerXY;
+document.onclick = removeMarkerXY;
 
 // Temporary variables to hold mouse x-y pos.s
 var tempX = 0
 var tempY = 0
 
-// Main function to retrieve mouse x-y pos.s
+function removeMarkerXY(e) {
+  if (IE) { // grab the x-y pos.s if browser is IE
+    tempX = event.clientX + document.body.scrollLeft
+    tempY = event.clientY + document.body.scrollTop
+  } else {  // grab the x-y pos.s if browser is NS
+    tempX = e.pageX
+    tempY = e.pageY
+  }  
+  // catch possible negative values in NS4
+  if (tempX < 0){tempX = 0}
+  if (tempY < 0){tempY = 0}  
 
-function getMouseXY(e) {
+  // show the position values in the form named Show
+  // in the text fields named MouseX and MouseY
+	// Image starts with an offset of 10 pixels in x and y dimensions.
+  tempX -= 10 
+  tempY -= 10 
+
+	// Call board servlet to remove specific marker
+	var blobkey ="<%=blobKeystr%>";  
+	var mapimage = document.getElementById("map");
+	var imgsrc = "boardshow?blob-key="+ blobkey +"&attrname=DELETE" + "&xcoord=" + tempX + "&ycoord=" + tempY;
+	mapimage.src = imgsrc;
+	return true
+}
+
+// Add marker at current XY mouse pointer position
+function addMarkerXY(e) {
   if (IE) { // grab the x-y pos.s if browser is IE
     tempX = event.clientX + document.body.scrollLeft
     tempY = event.clientY + document.body.scrollTop
@@ -117,6 +142,12 @@ function getMouseXY(e) {
 						 <label for="evac"><img src="evac.png" /></label>
         </FORM>
 
+</br>
+<p>Click the button below to delete all markers.</p>
+<form action="context/jerseyws/deleteall" method="get">
+<button type="submit">Delete</button>
+</form>
 </body>
+
 </html>
 

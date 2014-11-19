@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.images.*;
 import com.google.appengine.api.users.*;
 
+@SuppressWarnings("serial")
 public class BoardServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -29,18 +30,20 @@ public class BoardServlet extends HttpServlet {
 		// Get all appengine structures
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-		BlobKey blobKey = new BlobKey(req.getParameter("blob-key"));
+		BlobKey mapBlobKey = new BlobKey(req.getParameter("blob-key"));
 		BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
 		BlobstoreService blobstoreService = BlobstoreServiceFactory
 				.getBlobstoreService();
-		BlobInfo blobinfo = blobInfoFactory.loadBlobInfo(blobKey);
+		BlobInfo blobinfo = blobInfoFactory.loadBlobInfo(mapBlobKey);
 		ImagesService imagesService = ImagesServiceFactory.getImagesService();
 		List<Composite> listComposites = new ArrayList<Composite>();
+		List<Pair<BlobKey, ImageCoordinate>> attrImageList = null;
+		Entity userData = null;
 
 		long blobSize = blobinfo.getSize();
 		// Google Image API limits fetches from image bytes to 1MB. Must read
 		// them in chunks
-		byte[] bytes = Serve.readImageData(blobKey, blobSize);
+		byte[] bytes = Serve.readImageData(mapBlobKey, blobSize);
 
 		// Add map image to composite
 		Image image = ImagesServiceFactory.makeImage(bytes);
@@ -48,9 +51,8 @@ public class BoardServlet extends HttpServlet {
 				Composite.Anchor.TOP_LEFT);
 		listComposites.add(aPaste);
 
-		// First, get all existing attribute images, if any
-		List<Pair<BlobKey, ImageCoordinate>> attrImageList = null;
-		Entity userData = null;
+		// Try getting the attribute images list. If it doesn't exist,
+		// create one.
 		try {
 			attrImageList = getUSerAttList();
 		} catch (EntityNotFoundException e) {
@@ -63,25 +65,12 @@ public class BoardServlet extends HttpServlet {
 			attrImageList = new ArrayList<Pair<BlobKey, ImageCoordinate>>();
 
 		}
-		for (Pair<BlobKey, ImageCoordinate> pair : attrImageList) {
-			BlobKey attrBlobKey = pair.getL();
-			ImageCoordinate imgCoord = pair.getR();
-
-			BlobInfo attrInfo = blobInfoFactory.loadBlobInfo(attrBlobKey);
-			// Get attribute image
-			byte[] attrBytes = blobstoreService.fetchData(attrBlobKey, 0,
-					attrInfo.getSize());
-			Image attrImage = ImagesServiceFactory.makeImage(attrBytes);
-
-			// Create composite and add it to the list.
-			Composite newComposite = ImagesServiceFactory.makeComposite(
-					attrImage, imgCoord.getXCoord(), imgCoord.getYCoord(),
-					1.0f, Composite.Anchor.TOP_LEFT);
-			listComposites.add(newComposite);
-		}
-
+		
+		// Check if user has just added a new attribute image by double clicking
+		// on the map image, if yes, add it.
 		String radioValue = req.getParameter("attrname");
-		if (!radioValue.equals("null")) {
+		if (radioValue != null && !radioValue.equals("null")
+				&& !radioValue.equals("DELETE")) {
 			// Get attribute coordinates
 			int xcoord = Integer.parseInt(req.getParameter("xcoord"));
 			int ycoord = Integer.parseInt(req.getParameter("ycoord"));
@@ -122,17 +111,58 @@ public class BoardServlet extends HttpServlet {
 				attrImageList.add(new Pair<BlobKey, ImageCoordinate>(
 						attrblobKey, new ImageCoordinate(xcoord, ycoord)));
 				try {
-					setUSerAttList(attrImageList);
+					setUSerAttList(mapBlobKey.getKeyString(), attrImageList);
 				} catch (EntityNotFoundException e) {
 					Pair<BlobKey, ImageCoordinate> pair = new Pair<BlobKey, ImageCoordinate>(
 							attrblobKey, new ImageCoordinate(xcoord, ycoord));
-					String prop = pair.getL().getKeyString() + "&"
+					// The property string will contain: map image blobkey +
+					// attribute image blobkey + x coordinate of attr image +
+					// y coordinate of attr image.
+					String prop = mapBlobKey.getKeyString() + "&"
+							+ pair.getL().getKeyString() + "&"
 							+ pair.getR().getXCoord() + "&"
 							+ pair.getR().getYCoord();
 					userData.setProperty(prop, prop);
 					datastore.put(userData);
 				}
 			}
+		}
+		// User performed a single click on the map, check if it
+		// is a valid delete. If yes, delete the marker
+		else if (radioValue.equals("DELETE")) {
+			int xcoord = Integer.parseInt(req.getParameter("xcoord"));
+			int ycoord = Integer.parseInt(req.getParameter("ycoord"));
+			try {
+				deleteSelectedMarker(mapBlobKey.getKeyString(),
+						new ImageCoordinate(xcoord, ycoord));
+			} catch (EntityNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// Update the attribute images list that will be shown
+		try {
+			attrImageList = getUSerAttList();
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		// Now loop through list and get all existing attribute images, if any
+		for (Pair<BlobKey, ImageCoordinate> pair : attrImageList) {
+			BlobKey attrBlobKey = pair.getL();
+			ImageCoordinate imgCoord = pair.getR();
+
+			BlobInfo attrInfo = blobInfoFactory.loadBlobInfo(attrBlobKey);
+			// Get attribute image
+			byte[] attrBytes = blobstoreService.fetchData(attrBlobKey, 0,
+					attrInfo.getSize());
+			Image attrImage = ImagesServiceFactory.makeImage(attrBytes);
+
+			// Create composite and add it to the list.
+			Composite newComposite = ImagesServiceFactory.makeComposite(
+					attrImage, imgCoord.getXCoord(), imgCoord.getYCoord(),
+					1.0f, Composite.Anchor.TOP_LEFT);
+			listComposites.add(newComposite);
 		}
 
 		// Form new image with map and attribute composites
@@ -177,21 +207,23 @@ public class BoardServlet extends HttpServlet {
 			if (v instanceof String) {
 				String[] tokens = ((String) v).split("&");
 
-				if (tokens.length != 3) // Something really bad happened
+				if (tokens.length != 4) { // Something really bad happened
 					System.out.println("ERROR");
+					continue;
+				}
 
-				BlobKey blobKey = new BlobKey(tokens[0]);
-				int width = Integer.parseInt(tokens[1]);
-				int height = Integer.parseInt(tokens[2]);
-				attrImagesList.add(new Pair<BlobKey, ImageCoordinate>(blobKey,
-						new ImageCoordinate(width, height)));
+				BlobKey attrblobKey = new BlobKey(tokens[1]);
+				int xcoord = Integer.parseInt(tokens[2]);
+				int ycoord = Integer.parseInt(tokens[3]);
+				attrImagesList.add(new Pair<BlobKey, ImageCoordinate>(
+						attrblobKey, new ImageCoordinate(xcoord, ycoord)));
 			}
 		}
 
 		return attrImagesList;
 	}
 
-	private void setUSerAttList(
+	private void setUSerAttList(String mapBlobKeyStr,
 			List<Pair<BlobKey, ImageCoordinate>> attrImageList)
 			throws EntityNotFoundException {
 		UserService userService = UserServiceFactory.getUserService();
@@ -209,13 +241,52 @@ public class BoardServlet extends HttpServlet {
 			// property containing the blobkey string, the x coordinate and the
 			// y coordinate, all in the same string
 			for (Pair<BlobKey, ImageCoordinate> pair : attrImageList) {
-				String prop = pair.getL().getKeyString() + "&"
-						+ pair.getR().getXCoord() + "&"
+				String prop = mapBlobKeyStr + "&" + pair.getL().getKeyString()
+						+ "&" + pair.getR().getXCoord() + "&"
 						+ pair.getR().getYCoord();
 				userData.setProperty(prop, prop);
 			}
 		}
 		datastore.put(userData);
 
+	}
+
+	public void deleteSelectedMarker(String currMapKey, ImageCoordinate imgCoord)
+			throws EntityNotFoundException {
+		UserService userService = UserServiceFactory.getUserService();
+		User currentUser = userService.getCurrentUser();
+
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Entity userData = datastore.get(KeyFactory.createKey("UserData",
+				currentUser.getEmail()));
+		// Get list of attribute images
+		Map<String, Object> properties = userData.getProperties();
+		// Read all properties which contain the image blobkey and its
+		// coordinates
+		for (Entry<String, Object> property : properties.entrySet()) {
+			final Object v = property.getValue();
+			if (v instanceof String) {
+				String[] tokens = ((String) v).split("&");
+				String mapBlobKeyStr = tokens[0];
+
+				// Check if property marker is from the same map
+				if (!mapBlobKeyStr.equals(currMapKey))
+					continue;
+
+				// Now check if coordinates match the given marker
+				int xcoord = Integer.parseInt(tokens[2]);
+				int ycoord = Integer.parseInt(tokens[3]);
+				if (Math.abs(imgCoord.getXCoord() - xcoord) > 30
+						|| Math.abs(imgCoord.getYCoord() - ycoord) > 30)
+					continue;
+				// If this point is reached, we found the correct marker to
+				// delete
+				// Remove property from entity
+				userData.removeProperty((String) v);
+			}
+		}
+		// MUST call put to update entity!
+		datastore.put(userData);
 	}
 }
