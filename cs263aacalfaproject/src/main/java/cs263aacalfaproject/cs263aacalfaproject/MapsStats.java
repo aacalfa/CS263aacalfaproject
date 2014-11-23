@@ -11,7 +11,6 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.blobstore.*;
-import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.gson.Gson;

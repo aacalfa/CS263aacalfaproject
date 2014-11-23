@@ -20,6 +20,7 @@
 <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
     <title>Strategy Board</title>
+		<meta http-equiv="refresh" content="60" >
 </head>
 
 <body>
@@ -99,11 +100,11 @@ function addMarkerXY(e) {
   // show the position values in the form named Show
   // in the text fields named MouseX and MouseY
 	// Image starts with an offset of 10 pixels in x and y dimensions.
-  tempX -= 10 
-  tempY -= 10 
+  tempX -= 10
+  tempY -= 10
 
 	// Get selected radio value
-	var blobkey ="<%=blobKeystr%>";  
+	var blobkey ="<%=blobKeystr%>";
   var attribute = "sword";
 	var radios = document.getElementsByName('radios');
 
@@ -144,7 +145,7 @@ function addMarkerXY(e) {
 
 </br>
 <p>Click the button below to delete all markers.</p>
-<form action="context/jerseyws/deleteall" method="get">
+<form action="context/jerseyws/deleteall?currMap=<%= blobKeystr%>" method="post">
 <button type="submit">Delete</button>
 </form>
 </body>

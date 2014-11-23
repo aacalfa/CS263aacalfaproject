@@ -54,7 +54,7 @@ public class BoardServlet extends HttpServlet {
 		// Try getting the attribute images list. If it doesn't exist,
 		// create one.
 		try {
-			attrImageList = getUSerAttList();
+			attrImageList = getUSerAttList(mapBlobKey.getKeyString());
 		} catch (EntityNotFoundException e) {
 			// Must create the entity
 			Key currUserKey = KeyFactory.createKey("UserData",
@@ -142,7 +142,7 @@ public class BoardServlet extends HttpServlet {
 
 		// Update the attribute images list that will be shown
 		try {
-			attrImageList = getUSerAttList();
+			attrImageList = getUSerAttList(mapBlobKey.getKeyString());
 		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -185,7 +185,7 @@ public class BoardServlet extends HttpServlet {
 		request.getRequestDispatcher("board.jsp").forward(request, response);
 	}
 
-	private List<Pair<BlobKey, ImageCoordinate>> getUSerAttList()
+	private List<Pair<BlobKey, ImageCoordinate>> getUSerAttList(String mapBlobKeyStr)
 			throws EntityNotFoundException {
 		UserService userService = UserServiceFactory.getUserService();
 		User currentUser = userService.getCurrentUser();
@@ -211,6 +211,9 @@ public class BoardServlet extends HttpServlet {
 					System.out.println("ERROR");
 					continue;
 				}
+				// Check if attribute image corresponds to the current map image loaded
+				if (!mapBlobKeyStr.equals(tokens[0]))
+					continue;
 
 				BlobKey attrblobKey = new BlobKey(tokens[1]);
 				int xcoord = Integer.parseInt(tokens[2]);

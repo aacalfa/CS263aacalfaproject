@@ -19,9 +19,9 @@ import com.google.appengine.api.users.UserServiceFactory;
 @Path("/jerseyws")
 public class MarkEditor {
 
-	@GET
+	@POST
 	@Path("/deleteall")
-	public Response deleteAllMarkers(@PathParam("currMap") String currMapKey)
+	public Response deleteAllMarkers(@QueryParam("currMap") String currMapKey)
 			throws EntityNotFoundException, URISyntaxException {
 		UserService userService = UserServiceFactory.getUserService();
 		User currentUser = userService.getCurrentUser();
@@ -43,6 +43,9 @@ public class MarkEditor {
 				// so that we can redirect this method to the correct place
 				String[] tokens = ((String) v).split("&");
 				mapBlobKeyStr = tokens[0];
+				// Delete only markers from current map.
+				if (!mapBlobKeyStr.equals(currMapKey))
+					continue;
 				// Remove property from entity
 				userData.removeProperty((String) v);
 			}
@@ -51,7 +54,7 @@ public class MarkEditor {
 		datastore.put(userData);
 
 		// Refresh board
-		String uriRedirect = "/board.jsp?blob-key=" + mapBlobKeyStr;
+		String uriRedirect = "/board.jsp?blob-key=" + currMapKey;
 		java.net.URI location = new java.net.URI(uriRedirect);
 		return Response.temporaryRedirect(location).build();
 	}
