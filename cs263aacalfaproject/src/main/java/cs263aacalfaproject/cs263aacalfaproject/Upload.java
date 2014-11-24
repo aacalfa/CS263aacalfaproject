@@ -26,15 +26,16 @@ public class Upload extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 
-		Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
-		BlobKey blobKey = blobs.get("myFile");
+		Map<String, List<BlobKey>> blobFields = blobstoreService
+				.getUploads(req);
+		List<BlobKey> blobKeys = blobFields.get("myFile");
 
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
 		// User clicked on Submit/View uploaded maps, check if there are maps
 		// already uploaded
-		if (blobKey == null) {
+		if (blobFields.size() == 0) {
 			Query gaeQuery = new Query("GameMap");
 			PreparedQuery pq = datastore.prepare(gaeQuery);
 			List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
@@ -47,28 +48,32 @@ public class Upload extends HttpServlet {
 															// be shown
 			}
 		} else { // User chose to upload a new map
-			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
-			BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
-			String blobFilename = blobInfo.getFilename();
-			if (blobFilename.contains("_BF4")) { // Loading a map
-				Entity imagedata = new Entity("GameMap", blobKey.getKeyString());
-				imagedata.setProperty("blob-key", blobKey.getKeyString());
+			// Traverse through map
+			for (BlobKey blobKey : blobKeys) {
+				BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
+				BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
+				String blobFilename = blobInfo.getFilename();
+				if (blobFilename.contains("_BF4")) { // Loading a map
+					Entity imagedata = new Entity("GameMap",
+							blobKey.getKeyString());
+					imagedata.setProperty("blob-key", blobKey.getKeyString());
 
-				imagedata.setProperty("mapname", blobFilename);
-				// Add to data store
-				datastore.put(imagedata);
-			}
-			else if(blobFilename.contains("_ATTR")){ // Loading a map attribute
-				Entity imagedata = new Entity("MapAtributes", blobKey.getKeyString());
-				imagedata.setProperty("blob-key", blobKey.getKeyString());
+					imagedata.setProperty("mapname", blobFilename);
+					// Add to data store
+					datastore.put(imagedata);
+				} else if (blobFilename.contains("_ATTR")) { // Loading a map
+																// attribute
+					Entity imagedata = new Entity("MapAtributes",
+							blobKey.getKeyString());
+					imagedata.setProperty("blob-key", blobKey.getKeyString());
 
-				imagedata.setProperty("attrname", blobFilename);
-				// Add to data store
-				datastore.put(imagedata);
-
+					imagedata.setProperty("attrname", blobFilename);
+					// Add to data store
+					datastore.put(imagedata);
+				}
 			}
 			res.sendRedirect("/menu.jsp");
-			
+
 		}
 	}
 }

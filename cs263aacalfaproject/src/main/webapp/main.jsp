@@ -41,7 +41,7 @@
 %>
         <form action="<%= blobstoreService.createUploadUrl("/upload") %>" method="post" enctype="multipart/form-data">
             <input type="text" name="foo">
-            <input type="file" name="myFile">
+            <input type="file" name="myFile" multiple="true">
             <input type="submit" value="Submit/View uploaded maps">
         </form>
 <%
