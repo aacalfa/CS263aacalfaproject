@@ -5,12 +5,14 @@ package cs263aacalfaproject.cs263aacalfaproject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.memcache.*;
 import com.google.appengine.api.blobstore.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.images.*;
@@ -61,6 +63,8 @@ public class Upload extends HttpServlet {
 					imagedata.setProperty("mapname", blobFilename);
 					// Add to data store
 					datastore.put(imagedata);
+					// Also add information to memcache
+					addBlobInfoMemCache(blobInfo);
 				} else if (blobFilename.contains("_ATTR")) { // Loading a map
 																// attribute
 					Entity imagedata = new Entity("MapAtributes",
@@ -75,5 +79,24 @@ public class Upload extends HttpServlet {
 			res.sendRedirect("/menu.jsp");
 
 		}
+	}
+
+	private void addBlobInfoMemCache(BlobInfo blobInfo) {
+
+		long blobSize = blobInfo.getSize();
+		// Google Image API limits fetches from image bytes to 1MB. Must
+		// read them in chunks
+		byte[] bytes = Serve.readImageData(blobInfo.getBlobKey(), blobSize);
+		// Add map image to composite
+		Image image = ImagesServiceFactory.makeImage(bytes);
+
+		// Using the synchronous cache
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		syncCache.setErrorHandler(ErrorHandlers
+				.getConsistentLogAndContinue(Level.INFO));
+		String value = blobInfo.getFilename() + "&" + blobInfo.getSize() + "&"
+				+ image.getWidth() + "&" + image.getHeight() + "&" + image.getFormat().toString();
+		syncCache.put(blobInfo.getBlobKey(), value); // populate cache
+
 	}
 }
