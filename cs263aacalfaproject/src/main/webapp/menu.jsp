@@ -98,7 +98,7 @@ var MyFormCrt = JSON.stringify(MyForm.serializeObject());
  success:function(maindta)
  {
 
-alert(maindta);
+alert("Your message has been successfully sent! Thank you for your feedback.");
 
  },
  error: function(jqXHR, textStatus, errorThrown)
