@@ -65,7 +65,7 @@ public class BoardServlet extends HttpServlet {
 			attrImageList = new ArrayList<Pair<BlobKey, ImageCoordinate>>();
 
 		}
-		
+
 		// Check if user has just added a new attribute image by double clicking
 		// on the map image, if yes, add it.
 		String radioValue = req.getParameter("attrname");
@@ -98,7 +98,8 @@ public class BoardServlet extends HttpServlet {
 
 			// Add attribute image to composite
 			// Check if coordinates values are valid
-			if (xcoord <= image.getWidth() && ycoord <= image.getHeight()) {
+			if (xcoord <= image.getWidth() && ycoord <= image.getHeight()
+					&& xcoord > 0 && ycoord > 0) {
 				// Adjust xcoord and ycoord to correspond to center of attribute
 				// image
 				xcoord -= attrimage.getWidth() / 2;
@@ -146,7 +147,7 @@ public class BoardServlet extends HttpServlet {
 		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Now loop through list and get all existing attribute images, if any
 		for (Pair<BlobKey, ImageCoordinate> pair : attrImageList) {
 			BlobKey attrBlobKey = pair.getL();
@@ -185,8 +186,8 @@ public class BoardServlet extends HttpServlet {
 		request.getRequestDispatcher("board.jsp").forward(request, response);
 	}
 
-	private List<Pair<BlobKey, ImageCoordinate>> getUSerAttList(String mapBlobKeyStr)
-			throws EntityNotFoundException {
+	private List<Pair<BlobKey, ImageCoordinate>> getUSerAttList(
+			String mapBlobKeyStr) throws EntityNotFoundException {
 		UserService userService = UserServiceFactory.getUserService();
 		User currentUser = userService.getCurrentUser();
 
@@ -211,7 +212,8 @@ public class BoardServlet extends HttpServlet {
 					System.out.println("ERROR");
 					continue;
 				}
-				// Check if attribute image corresponds to the current map image loaded
+				// Check if attribute image corresponds to the current map image
+				// loaded
 				if (!mapBlobKeyStr.equals(tokens[0]))
 					continue;
 

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://cs263aacalfaproject.appspot.com/" />
+<title>New Test</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">New Test</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/menu.jsp</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Siege of Shanghai</td>
+	<td></td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>30,30</td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>150,150</td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>300,300</td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>600,600</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=def</td>
+	<td></td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>30,130</td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>150,250</td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>300,400</td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>600,700</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=squad</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='squadDropdown']/div/a/small</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=B Squad B</td>
+	<td></td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>400,400</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='squadDropdown']/div/a/small</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=C Squad C</td>
+	<td></td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>500,500</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=evac</td>
+	<td></td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>500,100</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=flag</td>
+	<td></td>
+</tr>
+<tr>
+	<td>doubleClickAt</td>
+	<td>id=map</td>
+	<td>400,200</td>
+</tr>
+</tbody></table>
+</body>
+</html>
