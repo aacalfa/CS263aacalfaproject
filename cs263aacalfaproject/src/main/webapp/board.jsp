@@ -108,6 +108,7 @@ function addMarkerXY(e) {
 	var attribute = "sword";
 	var radios = document.getElementsByName('radios');
 
+	// Find out which radio is checked
 	for (var i = 0, length = radios.length; i < length; i++) {
 		if (radios[i].checked) {
 				// Found the checked radio

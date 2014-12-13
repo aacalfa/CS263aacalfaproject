@@ -9,8 +9,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.*;
 
+/**
+ * Servlet that serve game map blob images.
+ * @author Andre Abreu Calfa
+ *
+ */
 public class Serve extends HttpServlet {
 	
+	/**
+	 * Reads a blob data in chunks and returns all its bytes in a byte array.
+	 * @param blobKey Blob to fetched.
+	 * @param blobSize Total number of bytes of blob. 
+	 * @return
+	 */
 	public static byte[] readImageData(BlobKey blobKey, long blobSize) {
 	    BlobstoreService blobStoreService = BlobstoreServiceFactory
 	            .getBlobstoreService();
@@ -34,6 +45,9 @@ public class Serve extends HttpServlet {
 	}
 	
 	@Override
+	/**
+	 * Verifies if there are any uploaded maps. If not, shows popup with warning message. If yes, redirect to main menu
+	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
 		if (req.getParameter("blob-key") == "") {

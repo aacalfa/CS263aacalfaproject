@@ -15,12 +15,23 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
+
+/**
+ * Taskqueue that enqueues feedback email messages.
+ * @author aacalfa
+ *
+ */
 @Path("/jerseyws")
 public class Enqueue {
 
 	@POST
 	@Path("/addmsg")
 	@Consumes(MediaType.APPLICATION_JSON)
+	/**
+	 * Add message to the taskqueue to be sent by Worker class.
+	 * @param jsonstring String containing a ContactMessage object (will be translated with GSON)
+	 * @throws UnsupportedEncodingException
+	 */
 	public void sendMessage(String jsonstring) throws UnsupportedEncodingException {
 		
 		UserService userService = UserServiceFactory.getUserService();

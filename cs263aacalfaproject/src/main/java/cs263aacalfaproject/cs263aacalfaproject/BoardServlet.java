@@ -14,9 +14,18 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.images.*;
 import com.google.appengine.api.users.*;
 
+
+/**
+ * Handles the strategy board manipulation.
+ * @author Andre Abreu Calfa
+ *
+ */
 @SuppressWarnings("serial")
 public class BoardServlet extends HttpServlet {
 	@Override
+	/**
+	 * Builds the composite list to show the current map and all existing markers.
+	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
@@ -186,6 +195,12 @@ public class BoardServlet extends HttpServlet {
 		request.getRequestDispatcher("board.jsp").forward(request, response);
 	}
 
+	/**
+	 * Get all existing markers from user in current map.
+	 * @param mapBlobKeyStr Current map blobkey.
+	 * @return List of all markers and their coordinates.
+	 * @throws EntityNotFoundException
+	 */
 	private List<Pair<BlobKey, ImageCoordinate>> getUSerAttList(
 			String mapBlobKeyStr) throws EntityNotFoundException {
 		UserService userService = UserServiceFactory.getUserService();
@@ -228,6 +243,12 @@ public class BoardServlet extends HttpServlet {
 		return attrImagesList;
 	}
 
+	/**
+	 * Updates list of all existing markers from user in current map.
+	 * @param mapBlobKeyStr Current map blobkey.
+	 * @param attrImageList Updated list of markers.
+	 * @throws EntityNotFoundException
+	 */
 	private void setUSerAttList(String mapBlobKeyStr,
 			List<Pair<BlobKey, ImageCoordinate>> attrImageList)
 			throws EntityNotFoundException {
@@ -256,6 +277,12 @@ public class BoardServlet extends HttpServlet {
 
 	}
 
+	/**
+	 * Deletes a specific marker in the current map, specified by its coordinate.
+	 * @param currMapKey Current map blobkey.
+	 * @param imgCoord Marker coordinate that will be deleted.
+	 * @throws EntityNotFoundException
+	 */
 	public void deleteSelectedMarker(String currMapKey, ImageCoordinate imgCoord)
 			throws EntityNotFoundException {
 		UserService userService = UserServiceFactory.getUserService();

@@ -1,7 +1,5 @@
 package cs263aacalfaproject.cs263aacalfaproject;
 
-//file Upload.java
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -20,6 +18,11 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+/**
+ * Servlet that handles image uploads.
+ * @author Andre Abreu Calfa
+ *
+ */
 public class Upload extends HttpServlet {
 	private BlobstoreService blobstoreService = BlobstoreServiceFactory
 			.getBlobstoreService();
@@ -81,6 +84,11 @@ public class Upload extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Adds the just uploaded map info to the memcache.
+	 * All the info is then displayed in a table in the main menu.
+	 * @param blobInfo Blob of map image uploaded.
+	 */
 	private void addBlobInfoMemCache(BlobInfo blobInfo) {
 
 		long blobSize = blobInfo.getSize();

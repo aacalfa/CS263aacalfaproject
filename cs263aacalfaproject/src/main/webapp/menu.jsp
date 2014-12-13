@@ -34,22 +34,23 @@
 <p>These are the current available maps. Please select one and prepare for the battle!</p>
 
 <%
-			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
-			Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
-			while(iterator.hasNext()) {
-				BlobInfo blobinfo = iterator.next();
-				String mapname = blobinfo.getFilename();
-				if (!mapname.contains("_BF4")) // Not actually a map
-					continue;
-
-				String blobkeyStr = blobinfo.getBlobKey().getKeyString();
-				mapname = mapname.replace("_BF4.png", "");
-				mapname = mapname.replace("_", " ");
-				%>
-				<a href="/serve?blob-key=<%= blobkeyStr%>"><%= mapname %> <br /></a>
-				<%
-			}
+		// Loop through all uploaded maps and display links to each one of them.
+		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+		BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
+		Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
+		while(iterator.hasNext()) {
+			BlobInfo blobinfo = iterator.next();
+			String mapname = blobinfo.getFilename();
+			if (!mapname.contains("_BF4")) // Not actually a map
+				continue;
+			// Write map link
+			String blobkeyStr = blobinfo.getBlobKey().getKeyString();
+			mapname = mapname.replace("_BF4.png", "");
+			mapname = mapname.replace("_", " ");
+			%>
+			<a href="/serve?blob-key=<%= blobkeyStr%>"><%= mapname %> <br /></a>
+			<%
+		}
 %>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -58,7 +59,6 @@
 
 $.fn.serializeObject = function() {
     var o = {};
-//    var a = this.serializeArray();
     $(this).find('input[type="hidden"], input[type="text"], input[type="password"], input[type="checkbox"]:checked, input[type="radio"]:checked, select, textarea').each(function() {
         if ($(this).attr('type') == 'hidden') { //if checkbox is checked do not take the hidden field
             var $parent = $(this).parent();
@@ -111,7 +111,7 @@ alert("Your message has been successfully sent! Thank you for your feedback.");
 });
 
 $.getJSON("/mapsstats", function(list) {
-    var table = $('#tabletest');
+    var table = $('#statstable');
     $.each(list, function(index, data) {
         $('<tr>').appendTo(table)
             .append($('<td>').text(data.filename))
@@ -128,7 +128,7 @@ $.getJSON("/mapsstats", function(list) {
 <br>
 
 <p>Available maps statistics:</p>
-<table style="width:100%" id="tabletest">
+<table style="width:100%" id="statstable">
   <tr>
     <td>Map file name</td>
     <td>Map file size (bytes)</td> 
@@ -136,7 +136,7 @@ $.getJSON("/mapsstats", function(list) {
     <td>Map height</td>
     <td>Image format</td>
   </tr>
-</table>				
+</table>
 
 <br>
 

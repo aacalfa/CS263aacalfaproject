@@ -15,6 +15,11 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 //The Worker servlet should be mapped to the "/worker" URL.
+/**
+ * Receives emails from the taskqueue and sends them to the specified recipient
+ * @author Andre Abreu Calfa
+ *
+ */
 public class Worker extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {

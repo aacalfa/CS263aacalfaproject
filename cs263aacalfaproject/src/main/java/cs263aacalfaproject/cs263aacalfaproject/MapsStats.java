@@ -18,6 +18,11 @@ import com.google.appengine.api.images.Image.Format;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.gson.Gson;
 
+/**
+ * Servlet that builds the MapData table in main menu.
+ * @author Andre Abreu Calfa
+ *
+ */
 public class MapsStats extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)

@@ -16,11 +16,23 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+/**
+ * Handles marker manipulations, using JAXRS REST
+ * @author Andre Abreu Calfa
+ *
+ */
 @Path("/jerseyws")
 public class MarkEditor {
 
 	@POST
 	@Path("/deleteall")
+	/**
+	 * Deletes all markers of current user, in the currently viewed map. 
+	 * @param currMapKey Blobkey of current map being displayed.
+	 * @return
+	 * @throws EntityNotFoundException
+	 * @throws URISyntaxException
+	 */
 	public Response deleteAllMarkers(@QueryParam("currMap") String currMapKey)
 			throws EntityNotFoundException, URISyntaxException {
 		UserService userService = UserServiceFactory.getUserService();
