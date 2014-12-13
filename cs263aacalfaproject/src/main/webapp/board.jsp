@@ -234,6 +234,10 @@ $('#squadDropdown').ddslick({
 <button type="submit">Delete</button>
 </form>
 
+</br>
+<p>Click the link below to go back to main menu.</p>
+<a class="btn" href="menu.jsp">Back</a>
+</form>
 </body>
 
 </html>

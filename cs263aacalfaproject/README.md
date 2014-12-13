@@ -20,3 +20,7 @@ To start the app, use the [App Engine Maven Plugin](http://code.google.com/p/app
 To see all the available goals for the App Engine plugin, run
 
     mvn help:describe -Dplugin=appengine
+
+If you do not wish to upload any map images to the application, just click the submit/View uploaded maps button.
+
+The selenium tests are located in the selenium folder. In order to run them, you must be logged in the app and in the main menu page (menu.jsp). Please be sure to run the tests in the slowest speed.
