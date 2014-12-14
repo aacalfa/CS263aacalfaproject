@@ -139,6 +139,10 @@ $.getJSON("/mapsstats", function(list) {
 </table>
 
 <br>
+<p>Click the link below to go back to upload page.</p>
+<a class="btn" href="main.jsp">Back</a>
+
+<br>
 
 <p>Suggestions? Bugs? Please contact the developer!</p>
 <form method="post" name="ajaxform" id ="ajaxform">
