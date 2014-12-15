@@ -23,6 +23,8 @@ To see all the available goals for the App Engine plugin, run
 
 After logging in to the application, if you do not wish to upload any map images to the application, just click the submit/View uploaded maps button.
 
+In menu.jsp, select one of the available maps to start your strategy. After loading the map image, you can add a marker by double clicking in the desired location on the map. To change which marker you wish to add, just select one of the radio values below the map. If you select the "squad" value, you can choose which letter you want by clicking on the dropdown list below it. To delete a specific marker, just do a single click on it. To delete all markers of a map, click on the "delete" button at the bottom of the page.
+
 The selenium tests are located in the selenium folder. In order to run them, you must be logged in the app and in the main menu page (menu.jsp). Please be sure to run the tests in the slowest speed.
 
 The available tests are:
